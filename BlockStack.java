@@ -7,7 +7,10 @@
  *
  * @author Serguei A. Mokhov, mokhov@cs.concordia.ca;
  * Inspired by an earlier code by Prof. D. Probst
-
+ *
+ * $Date: 14 Oct 2020
+ * @author Gabriel Karras - 40036341
+ * @author Alexia Capitina - 40024870
  */
 class BlockStack
 {
@@ -39,7 +42,7 @@ class BlockStack
 	/**
 	 * stack[0:5] with four defined values
 	 */
-	private char acStack[] = new char[] {'a', 'b', 'c', 'd', '$', '$'};
+	private char[] acStack = new char[] {'a', 'b', 'c', 'd', '*', '*'};
 
 	/**
 	 * Default constructor
@@ -64,7 +67,7 @@ class BlockStack
 			for(int i = 0; i < piSize - 2; i++)
 				this.acStack[i] = (char)('a' + i);
 
-			this.acStack[piSize - 2] = this.acStack[piSize - 1] = '$';
+			this.acStack[piSize - 2] = this.acStack[piSize - 1] = '*';
 
 			this.iTop = piSize - 3;
                         this.iSize = piSize;
@@ -94,7 +97,12 @@ class BlockStack
 	 */
 	public void push(final char pcBlock)
 	{
-		this.acStack[++this.iTop] = pcBlock;
+		if(!isEmpty()) {
+			this.acStack[++this.iTop] = pcBlock;
+		}
+		else{
+			this.acStack[++this.iTop] = 'a';
+		}
 	}
 
 	/**
@@ -104,7 +112,7 @@ class BlockStack
 	public char pop()
 	{
 		char cBlock = this.acStack[this.iTop];
-		this.acStack[this.iTop--] = '$'; // Leave prev. value undefined
+		this.acStack[this.iTop--] = '*'; // Leave prev. value undefined
 		return cBlock;
 	}
 
@@ -114,8 +122,7 @@ class BlockStack
 	 */
 	public boolean isEmpty()
 	{
-		// temp
-		return false;
+		return this.iTop == '*' || this.iTop == 0;
 	}
 
 	/**
@@ -164,6 +171,14 @@ class BlockStack
 		return this.acStack[index];
 	}
 
+	/**
+	 * Retrieves acStack
+	 * @return char[] acStack
+	 */
+	public char[] getFullACStack()
+	{
+		return this.acStack;
+	}
 }
 
 // EOF

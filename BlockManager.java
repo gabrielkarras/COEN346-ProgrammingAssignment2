@@ -10,7 +10,10 @@ import common.*;
  *
  * $Revision: 1.5 $
  * $Last Revision Date: 2019/07/02 $
-
+ *
+ * $Date: 14 Oct 2020
+ * @author Gabriel Karras - 40036341
+ * @author Alexia Capitina - 40024870
  */
 public class BlockManager
 {
@@ -59,6 +62,7 @@ public class BlockManager
 			System.out.println("Main thread starts executing.");
 			System.out.println("Initial value of top = " + soStack.getITop() + ".");
 			System.out.println("Initial value of stack top = " + soStack.pick() + ".");
+			soStack.incrementAccessCounter();
 			System.out.println("Main thread will now fork several threads.");
 
 			/*
@@ -119,7 +123,9 @@ public class BlockManager
 			System.out.println("System terminates normally.");
 			System.out.println("Final value of top = " + soStack.getITop() + ".");
 			System.out.println("Final value of stack top = " + soStack.pick() + ".");
+			soStack.incrementAccessCounter();
 			System.out.println("Final value of stack top-1 = " + soStack.getAt(soStack.getITop() - 1) + ".");
+			soStack.incrementAccessCounter();
 			System.out.println("Stack access count = " + soStack.getAccessCounter());
 
 			System.exit(0);
@@ -163,6 +169,7 @@ public class BlockManager
 				System.out.println("AcquireBlock thread [TID=" + this.iTID + "] requests Ms block.");
 
 				this.cCopy = soStack.pop();
+				soStack.incrementAccessCounter();
 
 				System.out.println
 				(
@@ -182,6 +189,7 @@ public class BlockManager
 					"Acq[TID=" + this.iTID + "]: Current value of stack top = " +
 					soStack.pick() + "."
 				);
+				soStack.incrementAccessCounter();
 			}
 			catch(Exception e)
 			{
@@ -217,8 +225,11 @@ public class BlockManager
 
 			try
 			{
-				if(soStack.isEmpty() == false)
-					this.cBlock = (char)(soStack.pick() + 1);
+				// Stack Access Operation?
+				if(soStack.isEmpty() == false) {
+					this.cBlock = (char) (soStack.pick() + 1);
+					soStack.incrementAccessCounter();
+				}
 
 
 				System.out.println
@@ -228,6 +239,7 @@ public class BlockManager
 				);
 
 				soStack.push(this.cBlock);
+				soStack.incrementAccessCounter();
 
 				System.out.println
 				(
@@ -240,6 +252,7 @@ public class BlockManager
 					"Rel[TID=" + this.iTID + "]: Current value of stack top = " +
 					soStack.pick() + "."
 				);
+				soStack.incrementAccessCounter();
 			}
 			catch(Exception e)
 			{
@@ -274,13 +287,16 @@ public class BlockManager
 
 					// [s] - means ordinary slot of a stack
 					// (s) - current top of the stack
-					for(int s = 0; s < soStack.getISize(); s++)
+					for(int s = 0; s < soStack.getISize(); s++) {
+
 						System.out.print
-						(
-							(s == BlockManager.soStack.getITop() ? "(" : "[") +
-							BlockManager.soStack.getAt(s) +
-							(s == BlockManager.soStack.getITop() ? ")" : "]")
-						);
+								(
+										(s == BlockManager.soStack.getITop() ? "(" : "[") +
+												BlockManager.soStack.getAt(s) +
+												(s == BlockManager.soStack.getITop() ? ")" : "]")
+								);
+						soStack.incrementAccessCounter();
+					}
 
 					System.out.println(".");
 
