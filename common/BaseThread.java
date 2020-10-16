@@ -82,7 +82,7 @@ public class BaseThread extends Thread
 	}
 
 	/**
-	 * Sets internal TID and updates next TID on contruction time, so it's private.
+	 * Sets internal TID and updates next TID on construction time, so it's private.
 	 */
 	private final void setTID()
 	{
@@ -100,7 +100,7 @@ public class BaseThread extends Thread
 	}
 
 	/**
-	 * Just a make up for the PHASE I to make it somewhat tangeable.
+	 * Just a make up for the PHASE I to make it somewhat tangible.
 	 * Must be atomic as it touches siTurn and siNextTID.
 	 */
 	protected synchronized void phase1()
@@ -120,7 +120,7 @@ public class BaseThread extends Thread
 	}
 
 	/**
-	 * Just a make up for the PHASE II to make it somewhat tangeable.
+	 * Just a make up for the PHASE II to make it somewhat tangible.
          * Must be atomic as it touches siTurn and siNextTID.
 	 */
 	protected synchronized void phase2()
@@ -147,7 +147,7 @@ public class BaseThread extends Thread
 	 *
 	 * @param pcIncreasingOrder true if TIDs are in increasing order; false otherwise
 	 *
-	 * @return Returns true if if the TID of currently running thread  matches the turn, 'false' otherwise
+	 * @return Returns true if the TID of currently running thread  matches the turn, 'false' otherwise
 	 */
 	public synchronized boolean turnTestAndSet(boolean pcIncreasingOrder)
 	{

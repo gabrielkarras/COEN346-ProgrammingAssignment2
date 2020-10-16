@@ -12,6 +12,11 @@
 class BlockStack
 {
 	/**
+	 * Stack access counter (records every access into the stack such as pop or push)
+	 */
+	private int sAccessCounter = 0;
+
+	/**
 	 * # of letters in the English alphabet + 2
 	 */
 	public static final int MAX_SIZE = 28;
@@ -24,17 +29,17 @@ class BlockStack
 	/**
 	 * Current size of the stack
 	 */
-	public int iSize = DEFAULT_SIZE;
+	private int iSize = DEFAULT_SIZE;
 
 	/**
 	 * Current top of the stack
 	 */
-	public int iTop  = 3;
+	private int iTop  = 3;
 
 	/**
 	 * stack[0:5] with four defined values
 	 */
-	public char acStack[] = new char[] {'a', 'b', 'c', 'd', '$', '$'};
+	private char acStack[] = new char[] {'a', 'b', 'c', 'd', '$', '$'};
 
 	/**
 	 * Default constructor
@@ -102,6 +107,63 @@ class BlockStack
 		this.acStack[this.iTop--] = '$'; // Leave prev. value undefined
 		return cBlock;
 	}
+
+	/**
+	 * Verifies if stack is empty
+	 * @return True(1) if true, otherwise False(0)
+	 */
+	public boolean isEmpty()
+	{
+		// temp
+		return false;
+	}
+
+	/**
+	 * Retrieves stack access counter
+	 * @return int sAccessCounter
+	 */
+	public int getAccessCounter()
+	{
+		return this.sAccessCounter;
+	}
+
+	/**
+	 * Increments sAccessCounter by for every stack access operation(i.e.:pop,push,getAt)
+	 */
+	public void incrementAccessCounter()
+	{
+		this.sAccessCounter++;
+		System.out.print("Stack Access Operation was Successful.");
+	}
+
+	/**
+	 * Retrieves iTop
+	 * @return int iTop
+	 */
+	public int getITop()
+	{
+		return this.iTop;
+	}
+
+	/**
+	 * Retrieves iSize
+	 * @return int iSize
+	 */
+	public int getISize()
+	{
+		return this.iSize;
+	}
+
+	/**
+	 * Retrieves element from acStack at designated index
+	 * @param index of element in acStack
+	 * @return char element from acStack
+	 */
+	public char getACStack(int index)
+	{
+		return this.acStack[index];
+	}
+
 }
 
 // EOF

@@ -77,7 +77,7 @@ public class BlockManager
 			System.out.println("main(): Three ReleaseBlock threads have been created.");
 
 			// Create an array object first
-			CharStackProber	aStackProbers[] = new CharStackProber[NUM_PROBERS];
+			CharStackProber[] aStackProbers = new CharStackProber[NUM_PROBERS];
 
 			// Then the CharStackProber objects
 			for(int i = 0; i < NUM_PROBERS; i++)
@@ -147,7 +147,6 @@ public class BlockManager
 	{
 		/**
 		 * A copy of a block returned by pop().
-                 * @see BlocStack#pop()
 		 */
 		private char cCopy;
 
@@ -273,7 +272,7 @@ public class BlockManager
 				{
 					System.out.print("Stack Prober [TID=" + this.iTID + "]: Stack state: ");
 
-					// [s] - means ordinay slot of a stack
+					// [s] - means ordinary slot of a stack
 					// (s) - current top of the stack
 					for(int s = 0; s < soStack.getISize(); s++)
 						System.out.print
