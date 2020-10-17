@@ -62,7 +62,6 @@ public class BlockManager
 			System.out.println("Main thread starts executing.");
 			System.out.println("Initial value of top = " + soStack.getITop() + ".");
 			System.out.println("Initial value of stack top = " + soStack.pick() + ".");
-			soStack.incrementAccessCounter();
 			System.out.println("Main thread will now fork several threads.");
 
 			/*
@@ -123,9 +122,7 @@ public class BlockManager
 			System.out.println("System terminates normally.");
 			System.out.println("Final value of top = " + soStack.getITop() + ".");
 			System.out.println("Final value of stack top = " + soStack.pick() + ".");
-			soStack.incrementAccessCounter();
 			System.out.println("Final value of stack top-1 = " + soStack.getAt(soStack.getITop() - 1) + ".");
-			soStack.incrementAccessCounter();
 			System.out.println("Stack access count = " + soStack.getAccessCounter());
 
 			System.exit(0);
@@ -169,7 +166,6 @@ public class BlockManager
 				System.out.println("AcquireBlock thread [TID=" + this.iTID + "] requests Ms block.");
 
 				this.cCopy = soStack.pop();
-				soStack.incrementAccessCounter();
 
 				System.out.println
 				(
@@ -189,7 +185,6 @@ public class BlockManager
 					"Acq[TID=" + this.iTID + "]: Current value of stack top = " +
 					soStack.pick() + "."
 				);
-				soStack.incrementAccessCounter();
 			}
 			catch(Exception e)
 			{
@@ -226,9 +221,8 @@ public class BlockManager
 			try
 			{
 				// Stack Access Operation?
-				if(soStack.isEmpty() == false) {
+				if(!soStack.isEmpty()) {
 					this.cBlock = (char) (soStack.pick() + 1);
-					soStack.incrementAccessCounter();
 				}
 
 
@@ -239,7 +233,6 @@ public class BlockManager
 				);
 
 				soStack.push(this.cBlock);
-				soStack.incrementAccessCounter();
 
 				System.out.println
 				(
@@ -252,7 +245,6 @@ public class BlockManager
 					"Rel[TID=" + this.iTID + "]: Current value of stack top = " +
 					soStack.pick() + "."
 				);
-				soStack.incrementAccessCounter();
 			}
 			catch(Exception e)
 			{
@@ -295,7 +287,6 @@ public class BlockManager
 												BlockManager.soStack.getAt(s) +
 												(s == BlockManager.soStack.getITop() ? ")" : "]")
 								);
-						soStack.incrementAccessCounter();
 					}
 
 					System.out.println(".");

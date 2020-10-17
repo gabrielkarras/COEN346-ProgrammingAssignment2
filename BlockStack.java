@@ -58,19 +58,20 @@ class BlockStack
 	{
 
 
-                if(piSize != DEFAULT_SIZE)
+		if(piSize != DEFAULT_SIZE)
 		{
 			this.acStack = new char[piSize];
 
 			// Fill in with letters of the alphabet and keep
 			// 2 free blocks
-			for(int i = 0; i < piSize - 2; i++)
-				this.acStack[i] = (char)('a' + i);
+			for(int i = 0; i < piSize - 2; i++) {
+				this.acStack[i] = (char) ('a' + i);
+			}
 
 			this.acStack[piSize - 2] = this.acStack[piSize - 1] = '*';
 
 			this.iTop = piSize - 3;
-                        this.iSize = piSize;
+			this.iSize = piSize;
 		}
 	}
 
@@ -78,51 +79,96 @@ class BlockStack
 	 * Picks a value from the top without modifying the stack
 	 * @return top element of the stack, char
 	 */
-	public char pick()
+	public char pick() throws Exception
 	{
-		return this.acStack[this.iTop];
+		if(!isEmpty()) {
+			incrementAccessCounter();
+			//System.out.println("\nSuccessfully accessed stack via pick().");
+			return this.acStack[this.iTop];
+		}
+		else{
+			throw new Exception("Empty Stack");
+		}
 	}
 
 	/**
 	 * Returns arbitrary value from the stack array
 	 * @return the element, char
 	 */
-	public char getAt(final int piPosition)
+	public char getAt(final int piPosition) throws Exception
 	{
-		return this.acStack[piPosition];
+		if(!isEmpty()) {
+			incrementAccessCounter();
+			//System.out.println("\nSuccessfully accessed stack via getAt().");
+			return this.acStack[piPosition];
+		}
+		else{
+			throw new Exception("Empty Stack");
+		}
 	}
 
 	/**
 	 * Standard push operation
 	 */
-	public void push(final char pcBlock)
+	public void push(final char pcBlock) throws Exception
 	{
-		if(!isEmpty()) {
-			this.acStack[++this.iTop] = pcBlock;
+		if(isEmpty()){
+			incrementAccessCounter();
+			this.acStack[this.iTop++] = 'a';
+		}
+		else if(isFull()){
+			//TODO Double check throwing exception or include catch
+			throw new Exception("Full Stack");
 		}
 		else{
-			this.acStack[++this.iTop] = 'a';
+			incrementAccessCounter();
+			this.acStack[++this.iTop] = pcBlock;
 		}
+		//System.out.println("\nSuccessfully accessed stack via push().");
 	}
 
 	/**
 	 * Standard pop operation
-	 * @return ex-top element of the stack, char
+	 * @return  char: ex-top element of the stack
 	 */
-	public char pop()
+	public char pop() throws Exception
 	{
-		char cBlock = this.acStack[this.iTop];
-		this.acStack[this.iTop--] = '*'; // Leave prev. value undefined
-		return cBlock;
+		if(!isEmpty() && iTop != 0) {
+			incrementAccessCounter();
+			char cBlock = this.acStack[this.iTop];
+			this.acStack[this.iTop--] = '*'; // Leave prev. value undefined
+			//System.out.println("\nSuccessfully accessed stack via pop()");
+			return cBlock;
+		}
+		else if(!isEmpty() && iTop == 0){
+			incrementAccessCounter();
+			char cBlock = this.acStack[this.iTop];
+			this.acStack[this.iTop] = '*'; // iTop is currently pointing to an empty stack
+			//System.out.println("\nSuccessfully accessed stack via pop()");
+			return cBlock;
+		}
+		else{
+			//TODO Double check throwing exception or include catch
+			throw new Exception("Empty Stack");
+		}
 	}
 
 	/**
 	 * Verifies if stack is empty
-	 * @return True(1) if true, otherwise False(0)
+	 * @return boolean: True(1) if empty, otherwise False(0)
 	 */
 	public boolean isEmpty()
 	{
-		return this.iTop == '*' || this.iTop == 0;
+		return ( (this.acStack[this.iTop ]== '*') && this.iTop == 0 );
+	}
+
+	/**
+	 * Verifies if stack is full (fixed-capacity stack)
+	 * @return boolean: True(1) if full, otherwise False(0)
+	 */
+	public boolean isFull()
+	{
+		return this.iTop == iSize - 1;
 	}
 
 	/**
@@ -140,12 +186,11 @@ class BlockStack
 	public void incrementAccessCounter()
 	{
 		this.sAccessCounter++;
-		System.out.print("Stack Access Operation was Successful.");
 	}
 
 	/**
 	 * Retrieves iTop
-	 * @return int iTop
+	 * @return int: iTop
 	 */
 	public int getITop()
 	{
@@ -154,7 +199,7 @@ class BlockStack
 
 	/**
 	 * Retrieves iSize
-	 * @return int iSize
+	 * @return int: iSize
 	 */
 	public int getISize()
 	{
@@ -164,7 +209,7 @@ class BlockStack
 	/**
 	 * Retrieves element from acStack at designated index
 	 * @param index of element in acStack
-	 * @return char element from acStack
+	 * @return char: element from acStack
 	 */
 	public char getACStack(int index)
 	{
@@ -173,7 +218,7 @@ class BlockStack
 
 	/**
 	 * Retrieves acStack
-	 * @return char[] acStack
+	 * @return char[]: acStack
 	 */
 	public char[] getFullACStack()
 	{
