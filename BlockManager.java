@@ -17,6 +17,7 @@ import common.*;
  */
 public class BlockManager
 {
+	public static int threadCounter;
 	/**
 	 * The stack itself
 	 */
@@ -35,7 +36,7 @@ public class BlockManager
 	/**
 	 * For atomicity
 	 */
-	//private static Semaphore mutex = new Semaphore(...);
+	private static Semaphore mutex = new Semaphore(1);
 
 	/*
 	 * For synchronization
@@ -44,13 +45,13 @@ public class BlockManager
 	/**
 	 * s1 is to make sure phase I for all is done before any phase II begins
 	 */
-	//private static Semaphore s1 = new Semaphore(...);
+	private static Semaphore s1 = new Semaphore(-8);
 
 	/**
 	 * s2 is for use in conjunction with Thread.turnTestAndSet() for phase II proceed
 	 * in the thread creation order
 	 */
-	//private static Semaphore s2 = new Semaphore(...);
+	private static Semaphore s2 = new Semaphore(0);
 
 
 	// The main()
@@ -155,11 +156,17 @@ public class BlockManager
 
 		public void run()
 		{
+			increaseCounter();
 			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] starts executing.");
-
-
 			phase1();
+			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] finished executing phase1.");
 
+			/* Barrier Synchronization General Solution*/
+			s1.P(); // Wait on other threads
+			s2.V();
+
+			/* Entering Critical Section */
+			mutex.P(); // Acquire lock if you're the first thread or wait
 
 			try
 			{
@@ -192,6 +199,8 @@ public class BlockManager
 				System.exit(1);
 			}
 
+			mutex.V(); // Release the lock
+
 			phase2();
 
 
@@ -217,6 +226,9 @@ public class BlockManager
 
 			phase1();
 
+			/* Entering Critical Section */
+
+			mutex.P(); // Acquire lock if you're the first thread or wait
 
 			try
 			{
@@ -252,6 +264,7 @@ public class BlockManager
 				System.exit(1);
 			}
 
+			mutex.V(); // Release lock
 
 			phase2();
 
@@ -270,6 +283,9 @@ public class BlockManager
 		{
 			phase1();
 
+			/* Entering Critical Section */
+
+			mutex.P(); // Acquire lock if you're the first thread or wait
 
 			try
 			{
@@ -299,12 +315,17 @@ public class BlockManager
 				System.exit(1);
 			}
 
+			mutex.V(); // Release lock
 
 			phase2();
 
 		}
 	} // class CharStackProber
 
+	public static synchronized void increaseCounter()
+	{
+		threadCounter++;
+	}
 
 	/**
 	 * Outputs exception information to STDERR
