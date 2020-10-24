@@ -114,10 +114,9 @@ class BlockStack
 	{
 		if(isEmpty()){
 			incrementAccessCounter();
-			this.acStack[this.iTop++] = 'a';
+			this.acStack[++this.iTop] = 'a';
 		}
 		else if(isFull()){
-			//TODO Double check throwing exception or include catch
 			throw new Exception("Full Stack");
 		}
 		else{
@@ -133,22 +132,14 @@ class BlockStack
 	 */
 	public char pop() throws Exception
 	{
-		if(!isEmpty() && iTop != 0) {
+		if(!isEmpty()) {
 			incrementAccessCounter();
 			char cBlock = this.acStack[this.iTop];
 			this.acStack[this.iTop--] = '*'; // Leave prev. value undefined
 			//System.out.println("\nSuccessfully accessed stack via pop()");
 			return cBlock;
 		}
-		else if(!isEmpty() && iTop == 0){
-			incrementAccessCounter();
-			char cBlock = this.acStack[this.iTop];
-			this.acStack[this.iTop] = '*'; // iTop is currently pointing to an empty stack
-			//System.out.println("\nSuccessfully accessed stack via pop()");
-			return cBlock;
-		}
 		else{
-			//TODO Double check throwing exception or include catch
 			throw new Exception("Empty Stack");
 		}
 	}
@@ -159,7 +150,7 @@ class BlockStack
 	 */
 	public boolean isEmpty()
 	{
-		return ( (this.acStack[this.iTop ]== '*') && this.iTop == 0 );
+		return ( this.iTop == -1 );
 	}
 
 	/**
