@@ -17,7 +17,7 @@ import common.*;
  */
 public class BlockManager
 {
-	public static int threadCounter;
+	public static int threadCounter = 0;
 	/**
 	 * The stack itself
 	 */
@@ -156,18 +156,13 @@ public class BlockManager
 
 		public void run()
 		{
+			mutex.P();
 			increaseCounter();
-			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] starts executing.");
+			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] starts executing PHASE I.");
 			phase1();
-			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] finished executing phase1.");
-
-			/* Barrier Synchronization General Solution*/
-			s1.P(); // Wait on other threads
-			s2.V();
 
 			/* Entering Critical Section */
-			mutex.P(); // Acquire lock if you're the first thread or wait
-
+			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] entering critical section.");
 			try
 			{
 				System.out.println("AcquireBlock thread [TID=" + this.iTID + "] requests Ms block.");
@@ -198,13 +193,39 @@ public class BlockManager
 				reportException(e);
 				System.exit(1);
 			}
+			finally
+			{
+				System.out.println("AcquireBlock thread [TID=" + this.iTID + "] leaving critical section.");
+				System.out.println("AcquireBlock thread [TID=" + this.iTID + "] finished executing PHASE I");
 
-			mutex.V(); // Release the lock
+				if(getCounter() == 10){
+					System.out.println("All threads have finished PHASE I");
+				}
 
+				mutex.V(); // Release the lock
+			}
+
+			/* Barrier Synchronization General Solution*/
+			if(this.iTID == 1){
+				// if first thread then follow these wait/signal steps
+				s1.P(); // Wait on other thread
+			}
+			else{
+				s1.V(); // Signal thread T1
+				s2.P();
+			}
+
+			while(!turnTestAndSet()){
+				//System.out.println("AcquireBlock thread [TID=" + this.iTID + "] failed to enter PHASE II.");
+				s2.V();
+				s2.P();
+			}; // busy wait
+
+			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] starts executing PHASE II.");
 			phase2();
-
-
+			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] finished executing PHASE II.");
 			System.out.println("AcquireBlock thread [TID=" + this.iTID + "] terminates.");
+			s2.V(); // Signal next thread
 		}
 	} // class AcquireBlock
 
@@ -221,15 +242,13 @@ public class BlockManager
 
 		public void run()
 		{
-			System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] starts executing.");
-
-
+			mutex.P(); // Acquire lock if you're the first thread or wait
+			increaseCounter();
+			System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] starts executing PHASE I.");
 			phase1();
 
 			/* Entering Critical Section */
-
-			mutex.P(); // Acquire lock if you're the first thread or wait
-
+			System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] entering critical section.");
 			try
 			{
 				// Stack Access Operation?
@@ -263,13 +282,40 @@ public class BlockManager
 				reportException(e);
 				System.exit(1);
 			}
+			finally
+			{
+				System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] leaving critical section.");
+				System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] finished executing PHASE I");
 
-			mutex.V(); // Release lock
+				if(getCounter() == 10){
+					System.out.println("All threads have finished PHASE I");
+				}
 
+				mutex.V();
+			}
+
+			/* Barrier Synchronization General Solution*/
+			if(this.iTID == 1){
+				// if first thread then follow these wait/signal steps
+				s1.P(); // Wait on other thread
+			}
+			else{
+				s1.V(); // Signal thread T1
+				s2.P(); // wait
+			}
+
+			while(!turnTestAndSet()){
+				//System.out.println("AcquireBlock thread [TID=" + this.iTID + "] failed to enter PHASE II.");
+				s2.V();
+				s2.P();
+			} // busy wait
+
+			System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] starts executing PHASE II.");
 			phase2();
-
-
+			System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] finished executing PHASE II.");
 			System.out.println("ReleaseBlock thread [TID=" + this.iTID + "] terminates.");
+			s2.V(); // Signal next thread
+
 		}
 	} // class ReleaseBlock
 
@@ -281,12 +327,13 @@ public class BlockManager
 	{
 		public void run()
 		{
+			mutex.P(); // Acquire lock if you're the first thread or wait
+			increaseCounter();
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] starts executing PHASE I.");
 			phase1();
 
 			/* Entering Critical Section */
-
-			mutex.P(); // Acquire lock if you're the first thread or wait
-
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] entering critical section");
 			try
 			{
 				for(int i = 0; i < siThreadSteps; i++)
@@ -315,16 +362,56 @@ public class BlockManager
 				System.exit(1);
 			}
 
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] leaving critical section");
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] finished executing PHASE I");
+
+			if(getCounter() == 10){
+				System.out.println("All threads have finished PHASE I");
+			}
+
 			mutex.V(); // Release lock
 
+
+			/* Barrier Synchronization General Solution*/
+			if(this.iTID == 1){
+				// if first thread then follow these wait/signal steps
+				s1.P(); // Wait on other threads to finish PHASE I
+			}
+			else{
+				s1.V(); // Signal thread T1
+				s2.P();
+			}
+
+			while(!turnTestAndSet()){
+				//System.out.println("CharStackProber thread [TID=" + this.iTID + "] failed to enter PHASE II");
+				s2.V();
+				s2.P();
+			}; // busy wait
+
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] starts executing PHASE II");
 			phase2();
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] finished executing PHASE II");
+			System.out.println("CharStackProber thread [TID=" + this.iTID + "] terminates");
+			s2.V(); // Signal next thread
 
 		}
 	} // class CharStackProber
 
-	public static synchronized void increaseCounter()
+	/**
+	 *  Increases thread counter
+	 */
+	public static void increaseCounter()
 	{
 		threadCounter++;
+	}
+
+	/**
+	 * Retrieves our threadCounter
+	 * @return int: threadCounter
+	 */
+	public static int getCounter()
+	{
+		return  threadCounter;
 	}
 
 	/**
