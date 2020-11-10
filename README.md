@@ -1,5 +1,5 @@
 
-**COEN 346: OS Programming Assignment 2 - Mutex, Semaphores and Synchronization**
+**OS Programming - Mutex, Semaphores and Synchronization**
 
 ## **Objectives**
 
